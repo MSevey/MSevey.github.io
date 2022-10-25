@@ -18,11 +18,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install
-        run: yarn install --frozen-lockfile
-      - name: Build
-        run: BASEURL='/pr-preview/pr-${{ github.event.number }}/' yarn build
-
       - name: Deploy preview
         uses: rossjrw/pr-preview-action@v1
         with:

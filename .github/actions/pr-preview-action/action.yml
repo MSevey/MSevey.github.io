@@ -9,6 +9,10 @@ branding:
   color: yellow
 
 inputs:
+  cname:
+    description: Custom url.
+    required: false
+    default: ""
   preview-branch:
     description: Branch on which the previews will be deployed.
     required: false
@@ -55,6 +59,8 @@ runs:
         pr: ${{ github.event.number }}
         actionref: ${{ github.action_ref }}
         actionrepo: ${{ github.action_repository }}
+        cname: ${{ inputs.cname }}
+        source: ${{ inputs.source-dir }}
       run: |
         echo "action=$action" >> $GITHUB_ENV
         echo "targetdir=$umbrella/pr-$pr" >> $GITHUB_ENV
@@ -63,10 +69,16 @@ runs:
         org=$(echo "$GITHUB_REPOSITORY" | cut -d "/" -f 1)
         thirdleveldomain=$(echo "$GITHUB_REPOSITORY" | cut -d "/" -f 2 | cut -d "." -f 1)
 
-        if [ "$org" == "$thirdleveldomain" ]; then
+        if [ "$cname" != "" ]; then
+          pagesurl="$cname"
+        elif [ "$org" == "$thirdleveldomain" ]; then
           pagesurl="${org}.github.io"
         else
           pagesurl=$(echo "$GITHUB_REPOSITORY" | sed 's/\//.github.io\//')
+        fi
+
+        if [ "$cname" != "" ]; then
+          echo "$cname" > $source"/CNAMETEST"
         fi
 
         echo "pagesurl=$pagesurl" >> $GITHUB_ENV
